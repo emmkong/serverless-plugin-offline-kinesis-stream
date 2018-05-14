@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-offline-kinesis-stream",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Serverless framework offline plugin to support aws kinesis stream",
   "author": "Emmanuel Kong <emmanuel@orchestrated.io>",
   "homepage": "https://github.com/orchestrated-io/serverless-plugin-offline-kinesis-stream#readme",
