@@ -1,0 +1,51 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8
+    shell: /bin/bash -e
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - package-lock-{{ checksum "package-lock.lock" }}
+          - package-lock-
+      - run:
+          name: install packages
+          command: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: package-lock-{{ checksum "package-lock.json" }}
+      - run:
+          name: test
+          command: npm test
+  publish:
+    docker:
+      - image: circleci/node:8
+    shell: /bin/bash -e
+    steps:
+      - checkout
+      - run: 
+          name: Set NPM authentication.
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - run:
+          name: Publish the module to npm.
+          command: npm publish
+workflows:
+  version: 2
+  unscheduled:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - publish:
+          requires:
+              - build
+          filters:
+            tags:
+              only: '/^v[\d.]+$/'
+    
+
+
