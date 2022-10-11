@@ -6,17 +6,17 @@ const ServerlessPluginOfflineKinesisStream = require('../src');
 const handler = require('./handler');
 const serverless = {
   config: {
-    servicePath: '../test'
+    servicePath: '../test',
   },
   service: {
     custom: {
       'serverless-offline': {},
       kinesisStream: {
-        streams: [{ table: 'table-name', functions: ['funtionA'] }]
+        streams: [{ table: 'table-name', functions: ['funtionA'] }],
       },
-      functions: { funtionA: { handler: 'handler.funtionA' } }
-    }
-  }
+      functions: { funtionA: { handler: 'handler.funtionA' } },
+    },
+  },
 };
 const options = {};
 
@@ -27,7 +27,7 @@ describe('Serverless Plugin Offline Kinesis Stream', () => {
       options
     );
     expect(plugin.hooks).toEqual({
-      'before:offline:start:init': expect.any(Function)
+      'before:offline:start:init': expect.any(Function),
     });
   });
 

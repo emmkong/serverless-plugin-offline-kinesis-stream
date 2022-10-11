@@ -5,12 +5,8 @@ const readableStream = require('kinesis-readable');
 
 function toLambdaEvent(messages) {
   return messages.map((message) => {
-    const {
-      SequenceNumber,
-      ApproximateArrivalTimestamp,
-      PartitionKey,
-      Data
-    } = message;
+    const { SequenceNumber, ApproximateArrivalTimestamp, PartitionKey, Data } =
+      message;
     return {
       eventID: `shardId-000000000000:${SequenceNumber}`,
       eventVersion: '1.0',
@@ -21,13 +17,13 @@ function toLambdaEvent(messages) {
         partitionKey: PartitionKey,
         data: Data.toString('base64'),
         kinesisSchemaVersion: '1.0',
-        sequenceNumber: SequenceNumber
+        sequenceNumber: SequenceNumber,
       },
       invokeIdentityArn: 'arn:aws:iam::EXAMPLE',
       eventName: 'aws:kinesis:record',
       eventSourceARN: 'arn:aws:kinesis:EXAMPLE',
       eventSource: 'aws:kinesis',
-      awsRegion: 'ap-southeast-2'
+      awsRegion: 'ap-southeast-2',
     };
   });
 }
@@ -54,21 +50,18 @@ class ServerlessPluginOfflineKinesisStream {
       functions: functions.map((functionName) => {
         const fn = _.get(serverless.service.functions, functionName);
         return fn && this.createHandler(fn);
-      })
+      }),
     }));
     this.provider = 'aws';
     this.commands = {};
     this.hooks = {
-      'before:offline:start:init': this.startReadableStreams.bind(this)
+      'before:offline:start:init': this.startReadableStreams.bind(this),
     };
   }
 
   createHandler(fn) {
     const handler = require(this.location + '/' + fn.handler.split('.')[0])[
-      fn.handler
-        .split('/')
-        .pop()
-        .split('.')[1]
+      fn.handler.split('/').pop().split('.')[1]
     ];
     return (event, context = {}) => handler(event, context);
   }
@@ -77,7 +70,7 @@ class ServerlessPluginOfflineKinesisStream {
     const self = this;
     const {
       config: { host: hostname, port, region = 'localhost' } = {},
-      streams
+      streams,
     } = self;
 
     const endpoint = new AWS.Endpoint(`http://${hostname}:${port}`);
@@ -86,12 +79,12 @@ class ServerlessPluginOfflineKinesisStream {
       const client = new AWS.Kinesis({
         endpoint,
         region,
-        params: { StreamName: streamName }
+        params: { StreamName: streamName },
       });
 
       const options = {
         iterator: 'LATEST',
-        limit: 1
+        limit: 1,
       };
 
       const readable = readableStream(client, options);
